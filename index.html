@@ -3,40 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ADA Dashboard</title>
+    <title>Cardano Wallet Explorer</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>ADA Dashboard <i class="fas fa-wallet"></i></h1>
-        
-        <div class="wallet-connect">
-            <button id="connect-wallet">
-                <i class="fas fa-plug"></i> Connect Wallet
-            </button>
-        </div>
+        <header class="app-header">
+            <div class="logo">
+                <i class="fas fa-cube"></i>
+                <h1>Cardano Wallet Explorer</h1>
+            </div>
+            <p class="subtitle">Explore Cardano wallet balances with ease</p>
+        </header>
 
-        <div class="wallet-search">
-            <h2>Check Any Wallet</h2>
-            <div class="search-box">
-                <input type="text" id="wallet-search" placeholder="Enter Cardano wallet address...">
-                <button id="search-button">
-                    <i class="fas fa-search"></i> Check Balance
+        <main class="content">
+            <div class="search-section">
+                <div class="search-box">
+                    <input type="text" 
+                           id="wallet-search" 
+                           placeholder="Enter Cardano wallet address..."
+                           aria-label="Wallet address input">
+                    <button id="search-button">
+                        <i class="fas fa-search"></i>
+                        <span>Check Balance</span>
+                    </button>
+                </div>
+                <div class="divider">
+                    <span>or</span>
+                </div>
+                <button id="connect-wallet" class="connect-button">
+                    <i class="fas fa-plug"></i>
+                    <span>Connect Yoroi Wallet</span>
                 </button>
             </div>
-        </div>
 
-        <div class="wallet-info">
-            <p id="wallet-address">
-                <i class="fas fa-address-card"></i> Wallet Address: Not Connected
-            </p>
-            <p id="wallet-balance">
-                <i class="fas fa-coins"></i> Balance: 0 ADA
-            </p>
-        </div>
+            <div class="wallet-info">
+                <div class="info-card" id="wallet-address">
+                    <div class="card-header">
+                        <i class="fas fa-address-card"></i>
+                        <h3>Wallet Address</h3>
+                    </div>
+                    <div class="card-content">
+                        Not Connected
+                    </div>
+                </div>
+
+                <div class="info-card" id="wallet-balance">
+                    <div class="card-header">
+                        <i class="fas fa-coins"></i>
+                        <h3>Balance</h3>
+                    </div>
+                    <div class="card-content">
+                        0 ADA
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="app-footer">
+            <p>Powered by <a href="https://giiyo.com" target="_blank" rel="noopener">Giiyo Technologies</a></p>
+        </footer>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>

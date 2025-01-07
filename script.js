@@ -1,9 +1,11 @@
-// Check if Yoroi is installed
+import config from './config.js';
+
+// This function checks if the Yoroi wallet extension is installed
 function checkYoroiInstalled() {
     return window.cardano && window.cardano.yoroi;
 }
 
-// Format ADA balance
+// Format ADA balance with proper decimal places
 function formatBalance(lovelaceBalance) {
     if (!lovelaceBalance || isNaN(lovelaceBalance)) {
         return "0.000000";
@@ -12,14 +14,12 @@ function formatBalance(lovelaceBalance) {
     return adaBalance.toFixed(6);
 }
 
-// Check wallet balance using Blockfrost API
+// Fetch wallet balance using Blockfrost API
 async function checkWalletBalance(address) {
     try {
-        // You'll need to sign up for a free API key at https://blockfrost.io/
-        const API_KEY = 'mainnet8npKlGfk52Wz0Q4tKYNQdi4z8JUchu06';
-        const response = await fetch(`https://cardano-mainnet.blockfrost.io/api/v0/addresses/${address}`, {
+        const response = await fetch(`${config.BLOCKFROST_URL}/addresses/${address}`, {
             headers: {
-                'project_id': API_KEY
+                'project_id': config.BLOCKFROST_API_KEY
             }
         });
 
@@ -28,34 +28,58 @@ async function checkWalletBalance(address) {
         }
 
         const data = await response.json();
-        return data.amount[0].quantity; // Returns balance in lovelace
+        return data.amount[0].quantity;
     } catch (error) {
         console.error('Error fetching balance:', error);
         throw error;
     }
 }
 
-// Update UI with wallet info
+// Update the UI with wallet information
 function updateWalletInfo(address, balance) {
-    document.getElementById('wallet-address').innerHTML = 
-        `<i class="fas fa-address-card"></i> Wallet Address: ${address}`;
-    document.getElementById('wallet-balance').innerHTML = 
-        `<i class="fas fa-coins"></i> Balance: ${formatBalance(balance)} ADA`;
+    // Format the address for display (show first and last few characters)
+    const shortAddress = address.length > 20 
+        ? `${address.slice(0, 8)}...${address.slice(-8)}`
+        : address;
+
+    // Update address card
+    const addressCard = document.querySelector('#wallet-address .card-content');
+    addressCard.textContent = shortAddress;
+    
+    // Update balance card
+    const balanceCard = document.querySelector('#wallet-balance .card-content');
+    balanceCard.textContent = `${formatBalance(balance)} ADA`;
+
+    // Add tooltip for full address
+    addressCard.title = address;
 }
 
-// Handle wallet search
+// Handle manual wallet address search
 async function handleWalletSearch() {
-    const address = document.getElementById('wallet-search').value.trim();
+    const searchInput = document.getElementById('wallet-search');
+    const address = searchInput.value.trim();
+    
     if (!address) {
         alert('Please enter a wallet address');
         return;
     }
 
     try {
+        // Show loading state
+        document.getElementById('search-button').innerHTML = 
+            '<i class="fas fa-spinner fa-spin"></i><span>Checking...</span>';
+        
         const balance = await checkWalletBalance(address);
         updateWalletInfo(address, balance);
+        
+        // Clear input after successful search
+        searchInput.value = '';
     } catch (error) {
         alert('Error: Invalid address or unable to fetch balance');
+    } finally {
+        // Restore button text
+        document.getElementById('search-button').innerHTML = 
+            '<i class="fas fa-search"></i><span>Check Balance</span>';
     }
 }
 
@@ -66,6 +90,10 @@ async function connectWallet() {
             alert("Please install the Yoroi wallet extension!");
             return;
         }
+
+        // Show loading state
+        document.getElementById('connect-wallet').innerHTML = 
+            '<i class="fas fa-spinner fa-spin"></i><span>Connecting...</span>';
 
         const api = await window.cardano.yoroi.enable();
         console.log("Wallet connected!");
@@ -84,14 +112,16 @@ async function connectWallet() {
     } catch (error) {
         console.error("Error connecting to wallet:", error);
         alert("Error connecting to wallet. Please make sure Yoroi is installed and try again.");
+    } finally {
+        // Restore button text
+        document.getElementById('connect-wallet').innerHTML = 
+            '<i class="fas fa-plug"></i><span>Connect Yoroi Wallet</span>';
     }
 }
 
 // Add event listeners
 document.getElementById('connect-wallet').addEventListener('click', connectWallet);
 document.getElementById('search-button').addEventListener('click', handleWalletSearch);
-
-// Add enter key support for search
 document.getElementById('wallet-search').addEventListener('keypress', (event) => {
     if (event.key === 'Enter') {
         handleWalletSearch();
