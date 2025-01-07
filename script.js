@@ -1,5 +1,3 @@
-import config from './config.js';
-
 // This function checks if the Yoroi wallet extension is installed
 function checkYoroiInstalled() {
     return window.cardano && window.cardano.yoroi;
@@ -17,9 +15,10 @@ function formatBalance(lovelaceBalance) {
 // Fetch wallet balance using Blockfrost API
 async function checkWalletBalance(address) {
     try {
-        const response = await fetch(`${config.BLOCKFROST_URL}/addresses/${address}`, {
+        const API_KEY = 'mainnet8npKlGfk52Wz0Q4tKYNQdi4z8JUchu06';
+        const response = await fetch(`https://cardano-mainnet.blockfrost.io/api/v0/addresses/${address}`, {
             headers: {
-                'project_id': config.BLOCKFROST_API_KEY
+                'project_id': API_KEY
             }
         });
 
